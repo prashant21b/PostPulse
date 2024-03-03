@@ -1,0 +1,21 @@
+.container {
+    width: 100%;
+  }
+  
+  @media screen and (max-width: 768px) {
+    .container {
+      justify-content: center;
+    }
+  }
+  
+  .msg {
+    text-align: center;
+    margin-top: 20px; /* Adjust the margin for smaller screens */
+  }
+  
+  .button {
+    display: inline-block;
+    padding: 10px 20px;
+    margin-top: 10px;
+  }
+  

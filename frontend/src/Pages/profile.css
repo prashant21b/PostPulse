@@ -1,0 +1,56 @@
+/* Profile.css */
+
+.profile{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    transition: transform 0.2sec;
+    background-color: aqua;
+  }
+  
+  .profile-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    padding: 16px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background-color: rgb(252, 82, 82);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    width: 30%;
+    height: 300px;
+    color: white;
+  }
+  .profile-container:hover {
+    box-shadow: 4px 8px 12px rgba(0, 0, 0, 0.2);
+    transform: scale(1.03);
+  }
+  .avatar-container {
+    margin-bottom: 16px;
+  }
+  
+  .avatar-image {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+  }
+  
+  .profile-info {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .username {
+    font-size: 24px;
+    font-weight: bold;
+   
+  }
+  
+  .email {
+    font-size: 16px;
+   
+  }
+  

@@ -1,0 +1,38 @@
+.container {
+  width: 100%;
+  max-width: 1370px;
+  margin: auto;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  display: flex;
+  margin-top: 150px;
+  padding: 0 15px;
+}
+
+.container h2 {
+  text-align: center;
+}
+
+.container .card {
+  width: 30%;
+  height: 450px; /* Set the desired height */
+  margin-bottom: 20px;
+}
+
+@media screen and (max-width: 768px) {
+  .container .card {
+    width: 95%; /* Adjust the width for medium screens */
+  }
+}
+
+@media screen and (max-width: 576px) {
+  .container .card {
+    width: 70%; /* Adjust the width for small screens */
+  }
+}
+
+@media only screen and (max-width: 600px) {
+  .container .card {
+    width: 100%; /* Adjust the width for extra small screens */
+  }
+}
