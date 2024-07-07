@@ -1,5 +1,13 @@
 const jwt=require('jsonwebtoken')
 require("dotenv").config();
+
+const {expressjwt}=require('express-jwt')
+
+exports.requireSignin = expressjwt({
+    secret: process.env.JWT_SECRET,
+    algorithms: ["HS256"],
+});
+
 exports.isLogin=async (req,res,next)=>{
     try{
         console.log("body" , req.body.jwtToken);
@@ -26,6 +34,7 @@ exports.isLogin=async (req,res,next)=>{
                 message:'token is invalid',
             });
         }
+        console.log("its alright from middleware")
         next();
     } 
     catch(error) {

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import './login.css';
 import { useNavigate} from "react-router-dom";
+import { baseURL } from '../url';
 const Register = () => {
   const [username,setUsername]=useState('');
   const [email, setEmail] = useState('');
@@ -19,7 +20,7 @@ const navigate=useNavigate();
   }
   const handleSubmit =async  (e) => {
     e.preventDefault();
-    const response = await fetch('/api/v1/register', {
+    const response = await fetch(`${baseURL}/api/v1/register`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

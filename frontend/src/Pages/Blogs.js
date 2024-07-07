@@ -4,6 +4,7 @@ import jwtDecode from 'jwt-decode';
 import { Link } from 'react-router-dom';
 // import './blogs.css'
 import '../Components/cards.css'
+import { baseURL } from '../url';
 export const Blogs = () => {
 const [loading,setLoading]=useState(false);
 const [data,setData]=useState([]);
@@ -11,7 +12,7 @@ const [data,setData]=useState([]);
     const token = localStorage.getItem('jwtToken');
   const decodedToken = token ? jwtDecode(token) : null;
   const userId=decodedToken.id;
-        const API_URL=`/api/v1/userpost/${userId}`
+        const API_URL=`${baseURL}/api/v1/userpost/${userId}`
         try {
             const res = await fetch(API_URL);
             console.log("re->>",res)

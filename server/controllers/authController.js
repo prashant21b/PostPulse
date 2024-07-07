@@ -91,18 +91,23 @@ exports.loginController = async (req, res) => {
     isUser.jwtToken = jwtToken;
     isUser.password = undefined;
 
-    const options = {
-      expires: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
-      httpOnly: true,
-      secure: false,
-    };
+    // const options = {
+    //   expires: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
+    //   httpOnly: true,
+    //   secure: false,
+    // };
 
-    res.cookie("jwtToken", jwtToken, options).status(200).json({
-      success: true,
-      message: "Login successful",
-      isUser,
+    // res.cookie("jwtToken", jwtToken, options).status(200).json({
+    //   success: true,
+    //   message: "Login successful",
+    //   isUser,
+    //   jwtToken,
+    // });
+    res.json({
       jwtToken,
-    });
+      isUser
+    })
+    
   } catch (error) {
     console.log(error);
     res.status(500).json({

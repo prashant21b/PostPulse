@@ -5,6 +5,8 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import jwtDecode from 'jwt-decode'
 import { Comment } from '../Components/Comment';
 import DOMPurify from 'dompurify';
+import renderHTML from 'react-render-html';
+import { baseURL } from '../url';
 const BlogPost = () => {
    const location=useLocation();
    console.log("kmdqkm",location.state._id);
@@ -19,14 +21,20 @@ const yyMMdd = year + '-' + month + '-' + day;
   const decodedToken = token ? jwtDecode(token) : null;
   const [comment,setComment]=useState('');
   const navigate=useNavigate();
-  const plainTextContent= DOMPurify.sanitize(location.state.content, {
-    ALLOWED_TAGS: []
-  });
+  // const plainTextContent= DOMPurify.sanitize(location.state.content, {
+  //   ALLOWED_TAGS: []
+  // });
+  
 async function clickHandler(){
-  const response=await fetch('/api/v1/comment ',{
+  if(!comment){
+    toast.error("Text is required")
+    return
+  }
+  const response=await fetch(`${baseURL}/api/v1/comment `,{
     method:'POST',
     headers:{
       'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
     },
     body:JSON.stringify({
       comment:comment,
@@ -39,7 +47,7 @@ window.location.reload();
 }
 const [data,setData]=useState([]);
 async function getComment(){
-  const response=await fetch('/api/v1/getcomment',{
+  const response=await fetch(`${baseURL}/api/v1/getcomment`,{
     method:'POST',
     headers:{
       'Content-Type': 'application/json',
@@ -68,12 +76,12 @@ useEffect(()=>{
   return (
     <div className='blog-box'>
     <div className="blog-post">
-      <img className="blog-post__image" src={`/${location.state.photo}`} alt="Blog Post" />
+      <img className="blog-post__image" src={location.state.photo.url} alt="Blog Post" />
       <div className="blog-post__content">
         <h2 className="blog-post__title">{location.state.title}</h2>
         <p className="blog-post__categories" style={{color:"green"}}>{location.state.categories}</p>
         <p className='info'>{yyMMdd}{' |'} <span style={{color:"blue"}}>{author}</span></p>
-        <p className="blog-post__text">{plainTextContent}  </p>
+        <p className="blog-post__text">{renderHTML(location.state.content)}  </p>
       </div>
       
     </div>

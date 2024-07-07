@@ -17,7 +17,7 @@ function clickHandler(event) {
   return (
    
         <div className="card">
-      <img src={`/${item.photo}`} alt="Lago di Braies"/>
+      <img src={item.photo.url} alt="Lago di Braies"/>
       <div className="card__details">
         <div className="name title" onClick={clickHandler}>{item.title}</div>
          <span className="tag">{yyMMdd}</span>

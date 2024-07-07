@@ -7,6 +7,7 @@ import { MdDelete } from 'react-icons/md';
 import { toast } from 'react-hot-toast';
 import { useLocation } from 'react-router-dom';
 import DOMPurify from 'dompurify';
+import { baseURL } from '../url';
 const Blog = ({ item, deleteItem }) => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -25,7 +26,7 @@ const Blog = ({ item, deleteItem }) => {
   async function deleteHandler() {
     try {
       const id = item._id;
-      const response = await fetch(`/api/v1/delete/${id}`, {
+      const response = await fetch(`${baseURL}/api/v1/delete/${id}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -58,7 +59,7 @@ const Blog = ({ item, deleteItem }) => {
 
   return (
     <div className="blog-post">
-      <img className="blog-post__image" src={`/${item.photo}`} alt="Blog Post" />
+      <img className="blog-post__image" src={item.photo.url} alt="Blog Post" />
       <h5 className="blog-post__title">{item.title}</h5>
       <p className="blog-post__content">
        

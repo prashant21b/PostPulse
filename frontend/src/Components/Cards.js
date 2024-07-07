@@ -3,12 +3,13 @@ import Card from './Card';
 import './cards.css'
 import Filter from './Filter';
 import { Spinner } from './Spinner';
+import { baseURL } from '../url';
 export const Cards = () => {
 const [loading,setLoading]=useState(false);
 const [data,setData]=useState([]);
    async function getData(){
         
-        const API_URL='/api/v1/post'
+        const API_URL=`${baseURL}/api/v1/post`
         try {
           setLoading(true);
             const res = await fetch(API_URL);

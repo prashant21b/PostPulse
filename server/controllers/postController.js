@@ -3,40 +3,66 @@ const User=require('../models/user')
 const BlogPost=require('../models/post');
 const {getDataUri } = require('../utils/datauri');
 const Comment=require('../models/comment')
+const cloudinary=require('cloudinary')
 
-exports.createPost= async (req, res) => {
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_NAME,
+  api_key: process.env.CLOUDINARY_KEY,
+  api_secret: process.env.CLOUDINARY_secret,
+});
 
-  console.log(req.file, req.body, 16)
-  try {
-      const title = req.body.title
-      const categories=req.body.categories
-      const content = req.body.content
-      const imageUrl = req.file.path.replace(/\s+/g, '');
-      const author=req.body.author
-      if (!title || !categories || !content || !imageUrl || !author) {
-          return res.send({ code: 400, message: 'Bad Request' })
-      }
-
-      const newService = new BlogPost({ title: title,categories:categories, content:content ,photo: imageUrl,author:author })
-
-      const success = await newService.save()
-
-      res.status(200).json({
-        sucess:true,
-        data:success,
-        message:"created"
-
-      })
-  }
-  catch (err) {
-    console.log(err);
-     res.status(500).json({
-      sucess:false,
-      message:"error"
+exports.uploadImage=async(req,res)=>{
+  try{ 
+   // console.log(req)
+    //console.log(req.files.images.path)
+     const result=await cloudinary.uploader.upload(req.files.image.path)
+     console.log("result->",result)
+     res.json({
+      url:result.secure_url,
+      public_id:result.public_id
      })
-  }
 
+  }
+  catch(error){
+
+  }
 }
+
+exports.createPost = async (req, res) => {
+  try {
+    const { title, categories, content, author, photoUrl, photoPublicId } = req.body;
+     console.log("34",req.body);
+    if (!title || !categories || !content || !photoUrl || !photoPublicId || !author) {
+      return res.status(400).json({ code: 400, message: 'Bad Request' });
+    }
+
+
+    const newBlogPost = new BlogPost({
+      title,
+      categories,
+      content,
+      author,
+      photo: {
+        url: photoUrl,
+        public_id: photoPublicId
+      }
+    });
+
+    const savedPost = await newBlogPost.save();
+
+    res.status(200).json({
+      success: true,
+      data: savedPost,
+      message: "Created"
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      success: false,
+      message: "Error"
+    });
+  }
+};
 
 
 exports.getAllPost = async (req, res) => {
@@ -75,18 +101,30 @@ console.log("post",id)
   }
 };
 
+
 exports.likeController = async (req, res) => {
   try {
     const id = req.params.id;
-    console.log(id)
+    console.log(req.user)
+    const userId = req.user;
+     
     const post = await BlogPost.findById(id);
 
     if (!post) {
       return res.status(404).json({ error: 'Blog post not found' });
     }
 
-    // Increase the value of the 'like' field by 1
-    post.likes += 1;
+    // Check if the user has already liked the post
+    const userHasLiked = post.likes.includes(userId);
+
+    if (userHasLiked) {
+      // If the user has already liked the post, remove the like
+      post.likes.pull(userId);
+    } else {
+      // If the user hasn't liked the post, add the like
+      post.likes.push(userId);
+    }
+
     await post.save();
 
     res.json({ message: 'Like updated successfully', post });
@@ -97,26 +135,8 @@ exports.likeController = async (req, res) => {
 };
 
 
-exports.dislikeController = async (req, res) => {
-  try {
-    const id = req.params.id;
-    console.log(id)
-    const post = await BlogPost.findById(id);
 
-    if (!post) {
-      return res.status(404).json({ error: 'Blog post not found' });
-    }
 
-    // Increase the value of the 'like' field by 1
-    post.likes -= 1;
-    await post.save();
-
-    res.json({ message: 'Like updated successfully', post });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Internal server error' });
-  }
-};
 
 exports.getUserPost=async (req,res)=>{
   try{
@@ -146,21 +166,23 @@ exports.deleteItem = async (req, res) => {
       return res.status(404).json({ message: 'Item not found' });
     }
 
+    // Delete the related comments
+    await Comment.deleteMany({ post: itemId });
+
     // Delete the item
     await BlogPost.deleteOne({ _id: itemId });
 
-    return res.status(200).json({ message: 'Item deleted successfully' });
+    return res.status(200).json({ message: 'Item and related comments deleted successfully' });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: 'Server error' });
   }
 };
 
-
 exports.commentController = async (req, res) => {
   try {
-    const { comment, userId, postId } = req.body;
-
+    const { comment, postId } = req.body;
+     const userId=req.user
     const newComment = new Comment({
       comment: comment,
       user: userId,
@@ -179,32 +201,19 @@ exports.commentController = async (req, res) => {
   }
 };
 
-// exports.editPost = async (req, res) => {
-//   try {
-//     const { id,title, content, categories,photo } = req.body;
-//     const updatedBlog = await BlogPost.findByIdAndUpdate(
-//       id,
-//       { title, content, categories,photo },
-//       { new: true } 
-//     );
-//     if (!updatedBlog) {
-//       return res.status(404).json({ error: 'Blog not found' });
-//     }
-//     res.status(200).json({ sucess:true,message: 'Blog updated successfully', blog: updatedBlog });
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).json({ error: 'Internal server error' });
-//   }
-// };
 
 exports.editPost = async (req, res) => {
   try {
-    const { id, title, content, categories } = req.body;
-    let photo =req.file?.path.replace(/\s+/g, '');
+    const { id, title, content, categories,imageUrl,publicKey } = req.body;
+   
 
     const updatedBlog = await BlogPost.findByIdAndUpdate(
       id,
-      { title, content, categories, photo },
+      { title, content, categories, photo:{
+             url:imageUrl,
+             public_id:publicKey
+      } 
+    },
       { new: true }
     );
 

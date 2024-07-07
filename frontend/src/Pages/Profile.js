@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import './profile.css'; // Assuming the CSS file is named "Profile.css"
 import jwtDecode from 'jwt-decode';
+import { baseURL } from '../url';
 const Profile = ({ username, email, avatarImage }) => {
   const token=localStorage.getItem("jwtToken");
   const decodedToken = token ? jwtDecode(token) : null;
   const [data,setData]=useState([]);
    async function getProfile(){
    
-     const response = await fetch('/api/v1/profile', {
+     const response = await fetch(`${baseURL}/api/v1/profile`, {
       method: 'POST',
      headers: {
         'Content-Type': 'application/json',

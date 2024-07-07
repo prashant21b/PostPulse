@@ -20,13 +20,22 @@ const blogPostSchema = new mongoose.Schema({
     required: true,
   },
   photo: {
-    type:String,
-    required:false
+    url: String,
+    public_id: String
 },
-  likes: {
-    type: Number,
-    default: 0,
-  }
+likes: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }]
+// comments:
+//         [
+//             {
+//                 text:String,
+//                 created:{type:Date,default:Date.now},
+//                 postedBY: {
+//                     type: mongoose.Schema.Types.ObjectId,
+//                     ref: "User"
+//                 },
+//             }
+
+//         ]
 }, { timestamps: true });
 
 module.exports = mongoose.model('BlogPost', blogPostSchema);

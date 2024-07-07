@@ -3,11 +3,12 @@ import React, { useEffect, useState } from 'react'
 import '../Components/cards.css'
 import { RecentPost } from '../Components/RecentPost';
 import { Spinner } from '../Components/Spinner';
+import { baseURL } from '../url';
 export const RecentPosts= () => {
 const [loading,setLoading]=useState(false);
 const [data,setData]=useState([]);
    async function getData(){
-        const API_URL='/api/v1/post'
+        const API_URL=`${baseURL}/api/v1/post`
         try {
           setLoading(true)
             const res = await fetch(API_URL);
